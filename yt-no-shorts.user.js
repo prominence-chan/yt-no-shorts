@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube: No Shorts
 // @namespace    https://github.com/prominence-chan/yt-no-shorts
-// @version      1.0.0
+// @version      1.1.0
 // @description  Hides Shorts everywhere on YouTube. On a Shorts page it hides the player and just says "bruh stop scrolling".
 // @author       prominence-chan
 // @match        https://www.youtube.com/*
@@ -25,6 +25,8 @@
     ytd-video-renderer:has(a[href^="/shorts/"]), ytd-grid-video-renderer:has(a[href^="/shorts/"]),
     ytd-rich-item-renderer:has(a[href^="/shorts/"]), ytd-compact-video-renderer:has(a[href^="/shorts/"]),
     ytd-guide-entry-renderer:has(a[title="Shorts"]), ytd-mini-guide-entry-renderer[aria-label="Shorts"],
+    ytd-mini-guide-entry-renderer:has(a[title="Shorts"]), ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]),
+    ytd-guide-entry-renderer:has(a[href^="/shorts"]), [data-no-shorts],
     yt-tab-shape[tab-title="Shorts"], tp-yt-paper-tab:has(> .tab-content[title="Shorts"]),
     yt-chip-cloud-chip-renderer:has(yt-formatted-string[title="Shorts"]),
     ytm-pivot-bar-item-renderer:has(.pivot-shorts), ytm-reel-item-renderer { display: none !important; }
@@ -37,7 +39,7 @@
     }`;
 
   function addStyle() {
-    if (document.getElementById('no-shorts-style')) return;
+    if (document.getElementById('no-shorts-style') || !document.documentElement) return;
     const s = document.createElement('style');
     s.id = 'no-shorts-style';
     s.textContent = CSS;
@@ -69,6 +71,21 @@
     }
   }
 
+  // Things CSS can't select (no :contains): the "Shorts" filter chip and shelves whose header just says "Shorts".
+  const SHELVES = 'grid-shelf-view-model, ytd-reel-shelf-renderer, ytd-rich-section-renderer, ytd-item-section-renderer, ytd-shelf-renderer';
+  // Polymer rewrites class lists, so mark with an attribute and an inline style instead
+  const hide = el => { el.setAttribute('data-no-shorts', ''); el.style.setProperty('display', 'none', 'important'); };
+  function sweep() {
+    document.querySelectorAll('yt-chip-cloud-chip-renderer, yt-tab-shape, ytm-chip-cloud-chip-renderer').forEach(el => {
+      if (el.textContent.trim() === 'Shorts') hide(el);
+    });
+    document.querySelectorAll('yt-shelf-header-layout, ytd-rich-shelf-renderer #title, ytd-shelf-renderer #title').forEach(h => {
+      if (h.textContent.trim() === 'Shorts') { const shelf = h.closest(SHELVES); if (shelf) hide(shelf); }
+    });
+  }
+  let sweepQueued = false;
+  const queueSweep = () => { if (!sweepQueued) { sweepQueued = true; requestAnimationFrame(() => { sweepQueued = false; sweep(); }); } };
+
   // YouTube is a single-page app: re-check on its navigation events, on history changes and as the DOM fills in.
   ['yt-navigate-start', 'yt-navigate-finish', 'yt-page-data-updated', 'popstate', 'DOMContentLoaded']
     .forEach(e => window.addEventListener(e, update, true));
@@ -76,7 +93,14 @@
     const orig = history[fn];
     history[fn] = function () { const r = orig.apply(this, arguments); setTimeout(update, 0); return r; };
   }
-  new MutationObserver(() => { if (onShorts()) { update(); stopShortsMedia(); } })
-    .observe(document.documentElement, { childList: true, subtree: true });
-  update();
+  // At document-start the root element can still be missing, so attach the observer once it exists
+  function observe() {
+    if (!document.documentElement) return setTimeout(observe, 10);
+    new MutationObserver(() => { queueSweep(); if (onShorts()) { update(); stopShortsMedia(); } })
+      .observe(document.documentElement, { childList: true, subtree: true });
+    update();
+    queueSweep();
+  }
+  ['yt-navigate-finish', 'yt-page-data-updated'].forEach(e => window.addEventListener(e, queueSweep, true));
+  observe();
 })();
