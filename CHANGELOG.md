@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 - 2026-11-21
+- Hide ad blocks too: in-feed and search ads, the home masthead ad, sponsored watch-page cards, companion, overlay
+  and promo banners, the ads panel (desktop and mobile). Video ads themselves still play.
+
 ## 1.1.0 - 2026-11-21
 - Hide the **Shorts** filter chip on search and shelves titled "Shorts" (new sweeper for elements CSS can't select)
 - Hide the Shorts entry in the collapsed (mini) sidebar

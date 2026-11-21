@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube: No Shorts
 // @namespace    https://github.com/prominence-chan/yt-no-shorts
-// @version      1.1.0
-// @description  Hides Shorts everywhere on YouTube. On a Shorts page it hides the player and just says "bruh stop scrolling".
+// @version      1.2.0
+// @description  Hides Shorts and ad blocks everywhere on YouTube. On a Shorts page it hides the player and just says "bruh stop scrolling".
 // @author       prominence-chan
 // @match        https://www.youtube.com/*
 // @match        https://m.youtube.com/*
@@ -30,6 +30,19 @@
     yt-tab-shape[tab-title="Shorts"], tp-yt-paper-tab:has(> .tab-content[title="Shorts"]),
     yt-chip-cloud-chip-renderer:has(yt-formatted-string[title="Shorts"]),
     ytm-pivot-bar-item-renderer:has(.pivot-shorts), ytm-reel-item-renderer { display: none !important; }
+    /* Ad blocks: in-feed and search ads, the home masthead, watch-page sidebar / companion / overlay ads, promo
+       banners and the "ads" engagement panel. (Video ads themselves still play: this only removes the boxes.) */
+    ytd-ad-slot-renderer, ytd-rich-item-renderer:has(> #content > ytd-ad-slot-renderer),
+    ytd-rich-section-renderer:has(ytd-ad-slot-renderer), ytd-in-feed-ad-layout-renderer, ytd-display-ad-renderer,
+    ytd-promoted-sparkles-web-renderer, ytd-promoted-sparkles-text-search-renderer, ytd-promoted-video-renderer,
+    ytd-search-pyv-renderer, ytd-video-masthead-ad-v3-renderer, ytd-primetime-promo-renderer, #masthead-ad,
+    ytd-banner-promo-renderer, ytd-statement-banner-renderer, ytd-brand-video-singleton-renderer,
+    ytd-brand-video-shelf-renderer, ytd-companion-slot-renderer, ytd-action-companion-ad-renderer,
+    ytd-player-legacy-desktop-watch-ads-renderer, #player-ads, #panels > ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-ads"],
+    ytd-item-section-renderer:has(> #contents > ytd-ad-slot-renderer:only-child),
+    .ytp-ad-overlay-container, .ytp-ad-overlay-slot, .ytp-ad-image-overlay, .ytp-featured-product,
+    ad-slot-renderer, ytm-rich-item-renderer:has(ad-slot-renderer), ytm-promoted-sparkles-web-renderer,
+    ytm-promoted-video-renderer, ytm-companion-ad-renderer, ytm-companion-slot { display: none !important; }
     html.no-shorts-page ytd-shorts, html.no-shorts-page ytd-page-manager > ytd-shorts,
     html.no-shorts-page #shorts-container, html.no-shorts-page ytm-reel-watch-player { display: none !important; }
     #bruh-stop-scrolling {

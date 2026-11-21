@@ -2,7 +2,7 @@
 
 # 🚫📱 YouTube: No Shorts
 
-**Hide YouTube Shorts everywhere. If you end up on one anyway: _bruh stop scrolling_.**
+**Hide YouTube Shorts (and the ad blocks) everywhere. If you end up on a Short anyway: _bruh stop scrolling_.**
 
 [![Install](https://img.shields.io/badge/install-userscript-ff0033?style=for-the-badge&logo=youtube&logoColor=white)](https://raw.githubusercontent.com/prominence-chan/yt-no-shorts/main/yt-no-shorts.user.js)
 [![Version](https://img.shields.io/github/v/release/prominence-chan/yt-no-shorts?style=for-the-badge&color=222)](https://github.com/prominence-chan/yt-no-shorts/releases/latest)
@@ -30,6 +30,7 @@ Works with **Tampermonkey** and **Violentmonkey** · Chrome, Firefox, Edge, Safa
 | Sidebar | the **Shorts** entry (full and mini guide) |
 | Watch page | Shorts in the recommendations |
 | Mobile site | Shorts shelves, tiles and the bottom-bar tab |
+| Ad blocks | in-feed and search ads, the home masthead ad, sponsored sidebar cards, companion / overlay / promo banners (video ads still play, only the boxes go) |
 | `/shorts/...` pages | the player is hidden and paused, you get **bruh stop scrolling** |
 
 ## Before / after
